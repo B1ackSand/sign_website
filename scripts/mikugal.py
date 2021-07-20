@@ -78,7 +78,7 @@ class Mikugal:
         # post data过去，内含帐号密码信息
         response = self.session.post(url=url, headers=headers, data=data)
         response_json = response.json()['obj']  # json的obj含有token、昵称和硬币数
-        message_context = f'用户名:{response_json["nickname"]} 硬币变化:{response_json["jf"]} + {response_json["qs"]}(or 1)'
+        message_context = f'用户名:{response_json["nickname"]} 硬币变化:{response_json["jf"]} + {response_json["qs"]}(非赞助用户为1)'
         tools.send_message(self.log_head + message_context)  # 记录信息
         self.sign_token = response_json["token"]  # 提取token
 
@@ -128,8 +128,8 @@ class Mikugal:
                 self.get_mkgal_addJf()
         except Exception as error:
             time.sleep(3)
-            message_context = f'[ERROR] 运行异常,脚本出现问题！本程序5s后会重试最多5次签到... (第'
-            tools.send_message(self.log_head + message_context + str(globalValues.count) + '次重试)\n')  # 信息log记录
+            message_context = f'[ERROR] 运行异常,脚本出现问题！本程序5s后会重试最多5次签到... (已重试'
+            tools.send_message(self.log_head + message_context + str(globalValues.count) + '次)\n')  # 信息log记录
             globalValues.count += 1
             self.__init__()  # 刷新初始化信息
             raise error
