@@ -78,7 +78,7 @@ class Mikugal:
         # post data过去，内含帐号密码信息
         response = self.session.post(url=url, headers=headers, data=data)
         response_json = response.json()['obj']  # json的obj含有token、昵称和硬币数
-        message_context = f'用户名:{response_json["nickname"]} 当前硬币:{response_json["jf"]} + {response_json["qs"]}(or 1)'
+        message_context = f'用户名:{response_json["nickname"]} 硬币变化:{response_json["jf"]} + {response_json["qs"]}(or 1)'
         tools.send_message(self.log_head + message_context)  # 记录信息
         self.sign_token = response_json["token"]  # 提取token
 
@@ -99,10 +99,23 @@ class Mikugal:
         response_json = response.json()
 
         # response中code显示0（成功）或10（失败或已签过到）
-        if response_json['code'] == 0:
+        date = tools.check_signin_status('SIGNIN_DATE')
+        status = tools.check_signin_status('SIGNIN_STATUS')
+
+        if response_json['code'] == 0 and date <= self.date:
             message_context = f'每日签到成功\n'
+            write_context = {'SIGNIN_DATE': self.date, 'SIGNIN_STATUS': 'success'}
         else:
-            message_context = f'每日签到失败,可能你今天签过到了？\n'
+            if date == self.date and (status == 'success'):
+                message_context = f'每日签到失败,你今天签过到了\n'
+                write_context = {'SIGNIN_DATE': self.date, 'SIGNIN_STATUS': 'success'}
+            else:
+                message_context = f'每日签到失败,出现意外的错误\n'
+                write_context = {'SIGNIN_DATE': self.date, 'SIGNIN_STATUS': 'fail'}
+                tools.write_signin_status(write_context)
+                tools.send_message(self.log_head + message_context)
+                raise
+        tools.write_signin_status(write_context)
         tools.send_message(self.log_head + message_context)  # 信息记录
 
     #  运行上面的函数,具有重试机制
@@ -114,9 +127,10 @@ class Mikugal:
                 self.get_mkgal_sign()
                 self.get_mkgal_addJf()
         except Exception as error:
-            globalValues.count += 1
+            time.sleep(3)
             message_context = f'[ERROR] 运行异常,脚本出现问题！本程序5s后会重试最多5次签到... (第'
             tools.send_message(self.log_head + message_context + str(globalValues.count) + '次重试)\n')  # 信息log记录
+            globalValues.count += 1
             self.__init__()  # 刷新初始化信息
             raise error
 
