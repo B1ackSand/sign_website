@@ -29,5 +29,5 @@ Check whether it is running correctly through `cat log.txt` or *crontab* mail.
 
 #### Feature
 ***
-Modify the main website outside the program.
+Modify the main website outside the program.  
 Better sign-in status detection.
