@@ -1,6 +1,7 @@
 ### Tips (For me xD) 
 
 #### Set Environment Variables (Linux)
+***
 1. Open the current user's profile into a text editor:  
  `vim ~/.bash_profile`
 
@@ -9,8 +10,8 @@
 
 OR. Get the profile information from *variables.json* file which is saved in `~/your/project/path/variables.json`
 
+#### Set Crontab (Linux)
 ***
-#### Set Crontab
 Use \*.sh file and *crontab* file to realize automated tasks.  
 
 1. You need to use an absolute path in shell file, otherwise there will be problems with automatic run.
@@ -25,3 +26,8 @@ Use \*.sh file and *crontab* file to realize automated tasks.
 `20 0-23/12 * * * . /home/username/.bash_profile; /bin/sh /home/username/autosign.sh`
 ***
 Check whether it is running correctly through `cat log.txt` or *crontab* mail.
+
+#### Feature
+***
+Modify the main website outside the program.
+Better sign-in status detection.

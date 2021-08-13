@@ -20,7 +20,7 @@ except ImportError:
 class Mikugal:
     def __init__(self):
         self.session = requests.session()  # 实例化session,跨请求保持参数
-        self.name = 'www.mikugal.com'  # 访问的主网站
+        self.name = 'www.yngal.com'  # 访问的主网站
         self.sign_token = None  # token需要记录，以便在addJf确认是否签到成功
         self.date = time.strftime("%Y-%m-%d", time.localtime())  # 记录当天的日期
         self.log_head = f'[{self.date}][{self.name}] '  # log记录头

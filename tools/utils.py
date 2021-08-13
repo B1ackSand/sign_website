@@ -10,7 +10,7 @@ import demjson
 def get_environment_variables(variable_name):
     try:
         return demjson.decode(os.environ['VARIABLE_JSON'])[variable_name]
-    except OSError:
+    except KeyError or OSError:
         send_message('[WARN] 系统环境变量读取失败，尝试从variables.json中读取')
         try:
             with open('variables.json', 'r',
