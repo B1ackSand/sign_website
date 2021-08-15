@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 
 # 在~/.bash_profile中定义VARIABLE_JSON变量：
-# export VARIABLE_JSON='{"MKGAL_EMAIL": "******@***.com", "MKGAL_PASSWORD": "79b87ab**************c6c86ba"}'
+# export VARIABLE_JSON='{"MKGAL_EMAIL": "******@***.com", "MKGAL_PASSWORD": "79b87ab****"}'
 # 网站会对密码进行加密，具体实现方式为MD5加密
 
 # 从系统变量中获取VARIABLE_JSON内容
