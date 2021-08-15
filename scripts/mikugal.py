@@ -6,21 +6,22 @@ from retrying import retry
 # 导入tools文件夹下的utils,globalValues
 try:
     import tools.utils as tools
-    import tools.globalValues as globalValues
+    import tools.globalValues as gV
+
 except ImportError:
     import sys
 
     # 可能出现的路径问题，重定向
     sys.path.append('./')
     import tools.utils as tools
-    import tools.globalValues as globalValues
+    import tools.globalValues as gV
 
 
 # mikugal类
 class Mikugal:
     def __init__(self):
         self.session = requests.session()  # 实例化session,跨请求保持参数
-        self.name = 'www.yngal.com'  # 访问的主网站
+        self.name = tools.url_remove_http('FIRST_WEBSITE')  # 访问第一网站
         self.sign_token = None  # token需要记录，以便在addJf确认是否签到成功
         self.date = time.strftime("%Y-%m-%d", time.localtime())  # 记录当天的日期
         self.log_head = f'[{self.date}][{self.name}] '  # log记录头
@@ -39,18 +40,17 @@ class Mikugal:
 
     # 测试主副网站是否能够正常访问
     def test_url_ok(self):
-        url = 'https://' + self.name
         try:
-            code = self.session.get(url, headers=self.headers, timeout=15)
+            code = self.session.get(tools.get_url_json('FIRST_WEBSITE'), headers=self.headers, timeout=15)
             code.raise_for_status()  # 抛出异常
             tools.send_message(self.log_head + '页面访问正常，状态码：' + str(code.status_code))
             return code.status_code
 
         #  所有Requests显式抛出的异常都继承自 RequestException
         except requests.exceptions.RequestException as error:
-            if self.name != 'www.yygal.com':
+            if self.name != tools.url_remove_http('SECOND_WEBSITE'):
                 tools.send_message(self.log_head + '[WARN] 主站访问出错，尝试访问备用站点...')
-                self.name = 'www.yygal.com'  # 切换到备用网站进行访问测试
+                self.name = tools.url_remove_http('SECOND_WEBSITE')  # 切换到备用网站进行访问测试
                 self.log_head = f'[{self.date}][{self.name}] '  # 更换头信息
                 return self.test_url_ok()
             else:
@@ -129,14 +129,14 @@ class Mikugal:
         except Exception as error:
             time.sleep(3)
             message_context = f'[ERROR] 运行异常,脚本出现问题！本程序5s后会重试最多5次签到... (已重试'
-            tools.send_message(self.log_head + message_context + str(globalValues.count) + '次)\n')  # 信息log记录
-            globalValues.count += 1
+            tools.send_message(self.log_head + message_context + str(gV.count) + '次)\n')  # 信息log记录
+            gV.count += 1
             self.__init__()  # 刷新初始化信息
             raise error
 
     def run(self):
         # 随机时间
-        second = random.randrange(3, 1095, 3)  # 3秒到1095秒之间随机隔3取值,最长时长约19分钟
+        second = random.randrange(3, 6, 3)  # 3秒到1095秒之间随机隔3取值,最长时长约19分钟
 
         # 日志输出
         date_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
@@ -148,4 +148,7 @@ class Mikugal:
 
 
 if __name__ == "__main__":
+    # 网站更新
+    tools.auto_update_website()
+    # 签到程序运行
     Mikugal().run()
