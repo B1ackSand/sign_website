@@ -6,6 +6,7 @@ from retrying import retry
 # 导入tools文件夹下的utils,globalValues
 try:
     import tools.utils as tools
+    import tools.MD5Encryption as MD5
     import tools.globalValues as gV
 
 except ImportError:
@@ -14,6 +15,7 @@ except ImportError:
     # 可能出现的路径问题，重定向
     sys.path.append('./')
     import tools.utils as tools
+    import tools.MD5Encryption as MD5
     import tools.globalValues as gV
 
 
@@ -26,7 +28,7 @@ class Mikugal:
         self.date = time.strftime("%Y-%m-%d", time.localtime())  # 记录当天的日期
         self.log_head = f'[{self.date}][{self.name}] '  # log记录头
         self.email = tools.get_environment_variables('MKGAL_EMAIL')  # 邮箱帐号
-        self.password = tools.get_environment_variables('MKGAL_PASSWORD')  # 帐号密码
+        self.password = MD5.psw_Encrypt(tools.get_environment_variables('MKGAL_PASSWORD'))  # 帐号密码
         self.headers = {
             'Connection': 'keep-alive',
             'Accept': 'application/json, text/plain, */*',
@@ -136,7 +138,7 @@ class Mikugal:
 
     def run(self):
         # 随机时间
-        second = random.randrange(3, 6, 3)  # 3秒到1095秒之间随机隔3取值,最长时长约19分钟
+        second = random.randrange(3, 1095, 3)  # 3秒到1095秒之间随机隔3取值,最长时长约19分钟
 
         # 日志输出
         date_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))

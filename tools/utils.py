@@ -36,9 +36,7 @@ def write_signin_status(context):
 def check_signin_status(variable_name):
     try:
         with open('sign_status.json', 'r', encoding='UTF-8') as file:
-            value = demjson.decode(file.read())[variable_name]
-            file.close()
-            return value
+            return demjson.decode(file.read())[variable_name]
     except Exception:
         print('文件有误，重建文件...')
         context = '{"SIGNIN_DATE": "1970-01-01", "SIGNIN_STATUS": "success"}'
@@ -68,7 +66,7 @@ def write_latest_url(order, latest_url):
         with open('website.json', mode='r+', encoding='UTF-8') as file:
             json_object = demjson.decode(file.read())
             json_object[order] = latest_url
-            demjson.encode_to_file('website.json', json_object, overwrite=True)
+            demjson.encode_to_file('website.json', json_object, overwrite=True, compactly=False)
             send_message('网站已更新为:' + str(latest_url))
     except IOError or FileNotFoundError:
         send_message('[WARN] 尝试从website.json中写入数据失败')

@@ -8,7 +8,8 @@
 2. Add the export command for *VARIABLE_JSON*, which include your account and processed password:  
 `export VARIABLE_JSON='{"MKGAL_EMAIL": "*****@*.com", "MKGAL_PASSWORD": "79*****************ba"}'`
 
-OR. Get the profile information from *variables.json* file which is saved in `~/your/project/path/variables.json`
+OR. Get the profile information from *variables.json* file which is saved in `~/your/project/path/variables.json`  
+`{"MKGAL_EMAIL": "*****@*.com", "MKGAL_PASSWORD": "79*****************ba"}`
 
 #### Set Crontab (Linux)
 ***
@@ -20,7 +21,7 @@ Use \*.sh file and *crontab* file to realize automated tasks.
 		. /etc/profile
 		. ~/.bash_profile
 		cd /home/username/sign_mkgal_automatic-master
-		/usr/local/bin/pipenv run /usr/local/bin/python3 /home/username/sign_mkgal_automatic-master/begin_sign_in.py  
+		/usr/local/bin/pipenv run /usr/local/bin/python3 /home/username/sign_website-master/begin_sign_in.py  
 
 2. Enter a new line in your *crontab* file, and save the file.  (Use absolute path)  
 `20 0-23/12 * * * . /home/username/.bash_profile; /bin/sh /home/username/autosign.sh`
@@ -29,5 +30,4 @@ Check whether it is running correctly through `cat log.txt` or *crontab* mail.
 
 #### Feature
 ***
-Modify the main website outside the program.  
 Better sign-in status detection.
