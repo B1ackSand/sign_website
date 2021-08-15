@@ -9,18 +9,18 @@
 `export VARIABLE_JSON='{"MKGAL_EMAIL": "*****@*.com", "MKGAL_PASSWORD": "79*****"}'`
 
 OR. Get the profile information from *variables.json* file which is saved in `~/your/project/path/variables.json`  
-`{"MKGAL_EMAIL": "*****@*.com", "MKGAL_PASSWORD": "79*****"}`
+	`{"MKGAL_EMAIL": "*****@*.com", "MKGAL_PASSWORD": "79*****"}`
 
 #### Set Crontab (Linux)
 ***
 Use \*.sh file and *crontab* file to realize automated tasks.  
 
-1. You need to use an absolute path in shell file, otherwise there will be problems with automatic run.
+1. You need to use an absolute path in Shell file, otherwise there will be problems with automatic run.
 
 		 #!/bin/sh	
 		. /etc/profile
 		. ~/.bash_profile
-		cd /home/username/sign_mkgal_automatic-master
+		cd /home/username/sign_website-master
 		/usr/local/bin/pipenv run /usr/local/bin/python3 /home/username/sign_website-master/begin_sign_in.py  
 
 2. Enter a new line in your *crontab* file, and save the file.  (Use absolute path)  
