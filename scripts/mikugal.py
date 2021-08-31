@@ -1,7 +1,6 @@
 import time
 import requests
 import random
-from retrying import retry
 
 # 导入tools文件夹下的utils,globalValues
 try:
@@ -104,37 +103,43 @@ class Mikugal:
         date = tools.check_signin_status('SIGNIN_DATE')
         status = tools.check_signin_status('SIGNIN_STATUS')
 
-        if response_json['code'] == 0 and date <= self.date:
-            message_context = f'每日签到成功\n'
+        if response_json['code'] == 0 and date <= self.date and (status == 'success'):
+            message_context = f'每日签到成功。\n'
             write_context = {'SIGNIN_DATE': self.date, 'SIGNIN_STATUS': 'success'}
         else:
             if date == self.date and (status == 'success'):
-                message_context = f'每日签到失败,你今天签过到了\n'
+                message_context = f'每日签到失败,你今天签过到了。\n'
                 write_context = {'SIGNIN_DATE': self.date, 'SIGNIN_STATUS': 'success'}
             else:
-                message_context = f'每日签到失败,出现意外的错误\n'
-                write_context = {'SIGNIN_DATE': self.date, 'SIGNIN_STATUS': 'fail'}
-                tools.write_signin_status(write_context)
-                tools.send_message(self.log_head + message_context)
-                raise
+                if (response_json['code'] == 10 or response_json['code'] == 0) and date == self.date and (
+                        status == 'fail'):
+                    message_context = f'失败后重试签到成功。\n'
+                    write_context = {'SIGNIN_DATE': self.date, 'SIGNIN_STATUS': 'success'}
+                else:
+                    message_context = f'每日签到失败,出现意外的错误。\n'
+                    write_context = {'SIGNIN_DATE': self.date, 'SIGNIN_STATUS': 'fail'}
+                    gV.Fail_status = True
         tools.write_signin_status(write_context)
         tools.send_message(self.log_head + message_context)  # 信息记录
 
-    #  运行上面的函数,具有重试机制
-    @retry(stop_max_attempt_number=5, wait_fixed=5000)
     def start(self):
-        try:
-            code = self.test_url_ok()
-            if code == requests.codes.ok:
-                self.get_mkgal_sign()
-                self.get_mkgal_addJf()
-        except Exception as error:
-            time.sleep(3)
-            message_context = f'[ERROR] 运行异常,脚本出现问题！本程序5s后会重试最多5次签到... (已重试'
-            tools.send_message(self.log_head + message_context + str(gV.count) + '次)\n')  # 信息log记录
-            gV.count += 1
-            self.__init__()  # 刷新初始化信息
-            raise error
+        while gV.Fail_status:
+            if gV.count >= 5:
+                break
+            gV.Fail_status = False
+            try:
+                code = self.test_url_ok()
+                if code == requests.codes.ok:
+                    self.get_mkgal_sign()
+                    self.get_mkgal_addJf()
+                gV.count += 1
+                time.sleep(3)
+            except Exception:
+                message_context = f'[ERROR] 运行异常,脚本出现问题！本程序5s后会重试最多5次签到... (已重试'
+                tools.send_message(self.log_head + message_context + str(gV.count) + '次)\n')  # 信息log记录
+                gV.count += 1
+                self.__init__()  # 刷新初始化信息
+                self.start()
 
     def run(self):
         # 随机时间
